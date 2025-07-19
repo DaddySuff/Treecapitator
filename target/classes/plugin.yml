@@ -1,0 +1,6 @@
+name: Treecapitator
+version: 1.0
+main: com.suff.treecapitator.Treecapitator
+api-version: 1.21
+description: Chopping wood and dat
+author: Suff
