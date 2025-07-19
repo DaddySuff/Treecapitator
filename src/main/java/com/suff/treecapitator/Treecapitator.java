@@ -77,11 +77,9 @@ public class Treecapitator extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
         Block block = event.getBlock();
 
-        // Check if player is sneaking and holding an axe
         if (player.isSneaking() && isAxe(player.getInventory().getItemInMainHand().getType())) {
-            // Check if the broken block is a log
             if (isLog(block.getType())) {
-                event.setCancelled(true); // Cancel the original block break
+                event.setCancelled(true);
                 breakTree(block, player, event.getExpToDrop());
             }
         }
@@ -104,57 +102,55 @@ public class Treecapitator extends JavaPlugin implements Listener {
             final Set<Block> checkedBlocks = new HashSet<>();
             final Queue<Block> blocksToCheck = new LinkedList<>();
             final ItemStack axe = player.getInventory().getItemInMainHand();
-            final World world = startBlock.getWorld();
-            final Material originalLogType = startBlock.getType(); // Store the type of the first log
+            final Material originalLogType = startBlock.getType();
 
             @Override
             public void run() {
                 if (blocksToCheck.isEmpty()) {
-                    // First run - start with the initial block
                     blocksToCheck.add(startBlock);
                     checkedBlocks.add(startBlock);
                 }
 
                 int blocksProcessed = 0;
-                int maxBlocksPerTick = 5; // Process up to 5 blocks per tick for performance
-                int maxTreeHeight = 50; // Maximum height of a tree to prevent breaking huge structures
-                int maxTreeWidth = 3; // Maximum width to prevent breaking large areas
+                int maxBlocksPerTick = 5;
+                int maxTreeHeight = 50;
+                int maxTreeWidth = 3;
 
                 while (!blocksToCheck.isEmpty() && blocksProcessed < maxBlocksPerTick) {
                     Block current = blocksToCheck.poll();
                     blocksProcessed++;
 
-                    // Break the block if it's a log of the same type as the original
-                    if (isLog(current.getType()) && current.getType() == originalLogType) {
-                        // Damage the axe
-                        if (axe != null) {
-                            if (axe.getItemMeta() instanceof org.bukkit.inventory.meta.Damageable) {
-                                org.bukkit.inventory.meta.Damageable meta = (org.bukkit.inventory.meta.Damageable) axe.getItemMeta();
-                                meta.setDamage(meta.getDamage() + 1);
-                                if (meta.getDamage() >= axe.getType().getMaxDurability()) {
-                                    player.getInventory().setItemInMainHand(null);
-                                    player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
-                                    break;
-                                }
-                                axe.setItemMeta(meta);
+                    Material type = current.getType();
+
+                    if (isLog(type) && type == originalLogType) {
+                        // Damage the axe for logs only
+                        if (axe != null && axe.getItemMeta() instanceof org.bukkit.inventory.meta.Damageable) {
+                            org.bukkit.inventory.meta.Damageable meta = (org.bukkit.inventory.meta.Damageable) axe.getItemMeta();
+                            meta.setDamage(meta.getDamage() + 1);
+                            if (meta.getDamage() >= axe.getType().getMaxDurability()) {
+                                player.getInventory().setItemInMainHand(null);
+                                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 1.0f);
+                                break;
                             }
+                            axe.setItemMeta(meta);
                         }
 
-                        // Break the block naturally to drop items
                         current.breakNaturally(axe);
                         player.giveExp(expToDrop);
+
+                    } else if (isLeaf(type)) {
+                        current.breakNaturally();
                     }
 
-                    // Check adjacent blocks (only up to maxTreeWidth blocks away horizontally)
+                    // Scan nearby blocks
                     for (int x = -1; x <= 1; x++) {
-                        for (int y = 0; y <= 1; y++) { // Only check above and same level
+                        for (int y = 0; y <= 1; y++) {
                             for (int z = -1; z <= 1; z++) {
                                 if (x == 0 && y == 0 && z == 0) continue;
 
                                 Block relative = current.getRelative(x, y, z);
                                 Material relativeType = relative.getType();
 
-                                // Only check logs of the same type and leaves that haven't been checked yet
                                 if ((relativeType == originalLogType || isLeaf(relativeType)) &&
                                         !checkedBlocks.contains(relative) &&
                                         Math.abs(relative.getX() - startBlock.getX()) <= maxTreeWidth &&
@@ -169,7 +165,6 @@ public class Treecapitator extends JavaPlugin implements Listener {
                     }
                 }
 
-                // If there are no more blocks to process, cancel the task
                 if (blocksToCheck.isEmpty()) {
                     cancel();
                 }
