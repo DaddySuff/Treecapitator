@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>Treecapitator</name>
-    <description>Break entire trees by sneaking and holding an axe</description>
+    <description>Cure for laziness</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
