@@ -43,7 +43,27 @@ public class Treecapitator extends JavaPlugin implements Listener {
             Material.STRIPPED_MANGROVE_LOG,
             Material.STRIPPED_CHERRY_LOG,
             Material.STRIPPED_CRIMSON_STEM,
-            Material.STRIPPED_WARPED_STEM
+            Material.STRIPPED_WARPED_STEM,
+            Material.OAK_WOOD,
+            Material.SPRUCE_WOOD,
+            Material.BIRCH_WOOD,
+            Material.JUNGLE_WOOD,
+            Material.ACACIA_WOOD,
+            Material.DARK_OAK_WOOD,
+            Material.MANGROVE_WOOD,
+            Material.CHERRY_WOOD,
+            Material.CRIMSON_HYPHAE,
+            Material.WARPED_HYPHAE,
+            Material.STRIPPED_OAK_WOOD,
+            Material.STRIPPED_SPRUCE_WOOD,
+            Material.STRIPPED_BIRCH_WOOD,
+            Material.STRIPPED_JUNGLE_WOOD,
+            Material.STRIPPED_ACACIA_WOOD,
+            Material.STRIPPED_DARK_OAK_WOOD,
+            Material.STRIPPED_MANGROVE_WOOD,
+            Material.STRIPPED_CHERRY_WOOD,
+            Material.STRIPPED_CRIMSON_HYPHAE,
+            Material.STRIPPED_WARPED_HYPHAE
     );
 
     private final Set<Material> LEAVES = EnumSet.of(
@@ -114,7 +134,7 @@ public class Treecapitator extends JavaPlugin implements Listener {
                 int blocksProcessed = 0;
                 int maxBlocksPerTick = 5;
                 int maxTreeHeight = 50;
-                int maxTreeWidth = 3;
+                int maxTreeWidth = 5;
 
                 while (!blocksToCheck.isEmpty() && blocksProcessed < maxBlocksPerTick) {
                     Block current = blocksToCheck.poll();
